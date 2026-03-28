@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八字算命 - 磊磊出品</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .logo {
+            font-size: 42px;
+            font-weight: bold;
+            color: #D4AF37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .subtitle {
+            color: #B8B8D0;
+            margin-top: 8px;
+            font-size: 16px;
+        }
+
+        /* Feature Cards */
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: rgba(45, 45, 74, 0.8);
+            border: 1px solid #3D3D5C;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(107, 47, 179, 0.3);
+            border-color: #D4AF37;
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .feature-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #D4AF37;
+            margin-bottom: 4px;
+        }
+
+        .feature-desc {
+            font-size: 12px;
+            color: #B8B8D0;
+        }
+
+        /* CTA Button */
+        .cta-button {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #6B2FB3 0%, #4A1F7D 100%);
+            border: 2px solid #D4AF37;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            margin: 30px 0;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #D4AF37;
+        }
+
+        .footer-text {
+            font-weight: bold;
+        }
+
+        .footer-sub {
+            color: #6B6B8A;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Form */
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #D4AF37;
+            text-align: center;
+            margin: 20px 0 10px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #B8B8D0;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .form-section {
+            background: rgba(45, 45, 74, 0.8);
+            border: 1px solid #3D3D5C;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            color: #D4AF37;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-field {
+            flex: 1;
+        }
+
+        .input-field label {
+            display: block;
+            font-size: 12px;
+            color: #B8B8D0;
+            margin-bottom: 4px;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 12px;
+            background: #1A1A2E;
+            border: 1px solid #3D3D5C;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .input-field input:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+
+        /* Result */
+        .result-score {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .score-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid #D4AF37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            font-size: 32px;
+            font-weight: bold;
+            color: #D4AF37;
+        }
+
+        .score-label {
+            margin-top: 10px;
+            color: #D4AF37;
+            font-size: 16px;
+        }
+
+        .bazi-display {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 16px;
+            background: rgba(45, 45, 74, 0.8);
+            border-radius: 12px;
+            margin: 16px 0;
+        }
+
+        .bazi-pillar {
+            text-align: center;
+        }
+
+        .bazi-label {
+            font-size: 12px;
+            color: #B8B8D0;
+            margin-bottom: 4px;
+        }
+
+        .bazi-ganzhi {
+            background: linear-gradient(135deg, #4A1F7D 0%, #6B2FB3 100%);
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #D4AF37;
+            font-size: 16px;
+            font-weight: bold;
+            color: #D4AF37;
+        }
+
+        .lucky-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .lucky-item {
+            background: rgba(45, 45, 74, 0.8);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .lucky-icon {
+            font-size: 24px;
+        }
+
+        .lucky-label {
+            font-size: 12px;
+            color: #B8B8D0;
+            margin: 4px 0;
+        }
+
+        .lucky-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #D4AF37;
+        }
+
+        .analysis-card {
+            background: rgba(45, 45, 74, 0.8);
+            border: 1px solid #3D3D5C;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .analysis-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .analysis-icon {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        .analysis-title {
+            flex: 1;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .analysis-score {
+            font-size: 18px;
+            font-weight: bold;
+            color: #D4AF37;
+        }
+
+        .analysis-text {
+            font-size: 14px;
+            color: #B8B8D0;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .suggestions {
+            background: #252540;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .suggestions-title {
+            font-size: 12px;
+            color: #D4AF37;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .suggestion-item {
+            font-size: 12px;
+            color: #B8B8D0;
+            line-height: 1.5;
+        }
+
+        /* Back button */
+        .back-button {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 2px solid #D4AF37;
+            border-radius: 12px;
+            color: #D4AF37;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #B8B8D0;
+        }
+
+        /* Daily Luck */
+        .daily-card {
+            background: rgba(45, 45, 74, 0.8);
+            border: 1px solid #3D3D5C;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .daily-emoji {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .daily-luck {
+            font-size: 24px;
+            font-weight: bold;
+            color: #D4AF37;
+        }
+
+        .daily-categories {
+            display: grid;
+            gap: 10px;
+        }
+
+        .daily-category {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(45, 45, 74, 0.8);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .daily-cat-name {
+            font-size: 14px;
+        }
+
+        .daily-cat-luck {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Home Page -->
+        <div id="home-page" class="page active">
+            <div class="header">
+                <div class="logo">八字算命</div>
+                <div class="subtitle">命理分析 · 运势预测</div>
+            </div>
+
+            <div class="features">
+                <div class="feature-card" onclick="showPage('input-page')">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">八字排盘</div>
+                    <div class="feature-desc">输入生辰，解析命理</div>
+                </div>
+                <div class="feature-card" onclick="checkBaziAndExecute(() => showMarriage())">
+                    <div class="feature-icon">💑</div>
+                    <div class="feature-title">合婚配对</div>
+                    <div class="feature-desc">两人八字，姻缘匹配</div>
+                </div>
+                <div class="feature-card" onclick="showDailyLuck()">
+                    <div class="feature-icon">📅</div>
+                    <div class="feature-title">每日运势</div>
+                    <div class="feature-desc">今日运势，趋吉避凶</div>
+                </div>
+                <div class="feature-card" onclick="checkBaziAndExecute(() => showLuckyElements())">
+                    <div class="feature-icon">✨</div>
+                    <div class="feature-title">幸运要素</div>
+                    <div class="feature-desc">颜色/数字/方位</div>
+                </div>
+            </div>
+
+            <button class="cta-button" onclick="showPage('input-page')">开始算命</button>
+
+            <div class="footer">
+                <div class="footer-text">磊磊出品 必属精品</div>
+                <div class="footer-sub">基于传统命理学的智能分析工具</div>
+            </div>
+        </div>
+
+        <!-- Input Page -->
+        <div id="input-page" class="page">
+            <div class="page-title">输入出生信息</div>
+            <div class="page-subtitle">请填写您的出生日期、时间和地点</div>
+
+            <div class="form-section">
+                <div class="form-label">出生日期</div>
+                <div class="input-row">
+                    <div class="input-field">
+                        <label>年份</label>
+                        <input type="number" id="year" value="1990" placeholder="1990">
+                    </div>
+                    <div class="input-field">
+                        <label>月份</label>
+                        <input type="number" id="month" value="1" placeholder="1">
+                    </div>
+                    <div class="input-field">
+                        <label>日期</label>
+                        <input type="number" id="day" value="1" placeholder="1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-label">出生时间</div>
+                <div class="input-row">
+                    <div class="input-field">
+                        <label>小时 (24时制)</label>
+                        <input type="number" id="hour" value="12" placeholder="12">
+                    </div>
+                    <div class="input-field">
+                        <label>分钟</label>
+                        <input type="number" id="minute" value="0" placeholder="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-label">出生地点（可选）</div>
+                <div class="input-row">
+                    <div class="input-field">
+                        <input type="text" id="birthplace" placeholder="例如：北京">
+                    </div>
+                </div>
+            </div>
+
+            <button class="cta-button" onclick="calculateBazi()">开始分析</button>
+            <button class="back-button" onclick="showPage('home-page')">返回</button>
+        </div>
+
+        <!-- Result Page -->
+        <div id="result-page" class="page">
+            <div class="result-score">
+                <div class="score-circle" id="overall-score">75</div>
+                <div class="score-label">综合评分</div>
+            </div>
+
+            <div class="bazi-display" id="bazi-display">
+                <!-- Bazi will be inserted here -->
+            </div>
+
+            <div class="lucky-section" id="lucky-section">
+                <!-- Lucky info will be inserted here -->
+            </div>
+
+            <div id="analysis-section">
+                <!-- Analysis will be inserted here -->
+            </div>
+
+            <button class="back-button" onclick="showPage('home-page')">返回首页</button>
+        </div>
+
+        <!-- Daily Luck Page -->
+        <div id="daily-page" class="page">
+            <div class="page-title">每日运势</div>
+            <div class="page-subtitle" id="daily-date"></div>
+
+            <div class="daily-card">
+                <div class="daily-emoji" id="daily-emoji">🌟</div>
+                <div class="daily-luck" id="daily-luck">大吉</div>
+            </div>
+
+            <div class="daily-categories" id="daily-categories">
+                <!-- Daily categories will be inserted here -->
+            </div>
+
+            <button class="back-button" onclick="showPage('home-page')">返回</button>
+        </div>
+
+        <!-- Marriage Page -->
+        <div id="marriage-page" class="page">
+            <div class="page-title">合婚配对</div>
+            <div class="page-subtitle">输入双方出生信息</div>
+
+            <div class="form-section">
+                <div class="form-label">男方信息</div>
+                <div class="input-row">
+                    <div class="input-field">
+                        <label>年份</label>
+                        <input type="number" id="m1-year" placeholder="1990">
+                    </div>
+                    <div class="input-field">
+                        <label>月份</label>
+                        <input type="number" id="m1-month" placeholder="1">
+                    </div>
+                    <div class="input-field">
+                        <label>日期</label>
+                        <input type="number" id="m1-day" placeholder="1">
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div class="input-field">
+                        <label>小时</label>
+                        <input type="number" id="m1-hour" placeholder="0">
+                    </div>
+                    <div class="input-field">
+                        <label>分钟</label>
+                        <input type="number" id="m1-minute" placeholder="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-label">女方信息</div>
+                <div class="input-row">
+                    <div class="input-field">
+                        <label>年份</label>
+                        <input type="number" id="m2-year" placeholder="1990">
+                    </div>
+                    <div class="input-field">
+                        <label>月份</label>
+                        <input type="number" id="m2-month" placeholder="1">
+                    </div>
+                    <div class="input-field">
+                        <label>日期</label>
+                        <input type="number" id="m2-day" placeholder="1">
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div class="input-field">
+                        <label>小时</label>
+                        <input type="number" id="m2-hour" placeholder="0">
+                    </div>
+                    <div class="input-field">
+                        <label>分钟</label>
+                        <input type="number" id="m2-minute" placeholder="0">
+                    </div>
+                </div>
+            </div>
+
+            <button class="cta-button" onclick="calculateMarriage()">开始合婚</button>
+            <button class="back-button" onclick="showPage('home-page')">返回</button>
+        </div>
+    </div>
+
+    <script>
+        let currentBaziData = null;
+
+        function checkBaziAndExecute(callback) {
+            if (!currentBaziData) {
+                alert('请先完成八字排盘');
+                showPage('input-page');
+                return;
+            }
+            callback();
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        async function calculateBazi() {
+            const year = parseInt(document.getElementById('year').value);
+            const month = parseInt(document.getElementById('month').value);
+            const day = parseInt(document.getElementById('day').value);
+            const hour = parseInt(document.getElementById('hour').value);
+            const minute = parseInt(document.getElementById('minute').value);
+            const birthplace = document.getElementById('birthplace').value;
+
+            if (year < 1900 || year > 2100) {
+                alert('请输入有效的年份（1900-2100）');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8000/bazi', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        year, month, day, hour, minute, birthplace
+                    })
+                });
+
+                if (!response.ok) throw new Error('API error');
+                const data = await response.json();
+
+                currentBaziData = data;
+                displayResult(data);
+                showPage('result-page');
+            } catch (e) {
+                alert('计算失败，请确保后端服务已启动 (python main.py)');
+                console.error(e);
+            }
+        }
+
+        function displayResult(data) {
+            const { bazi, analysis, lucky } = data;
+
+            // Overall score
+            document.getElementById('overall-score').textContent = analysis.overall_score;
+
+            // Bazi display
+            const pillars = [
+                {label: '年柱', data: bazi.year},
+                {label: '月柱', data: bazi.month},
+                {label: '日柱', data: bazi.day},
+                {label: '时柱', data: bazi.hour}
+            ];
+
+            document.getElementById('bazi-display').innerHTML = pillars.map(p => `
+                <div class="bazi-pillar">
+                    <div class="bazi-label">${p.label}</div>
+                    <div class="bazi-ganzhi">${p.data.ganzhi}</div>
+                </div>
+            `).join('');
+
+            // Lucky section
+            document.getElementById('lucky-section').innerHTML = `
+                <div class="lucky-item">
+                    <div class="lucky-icon">🎨</div>
+                    <div class="lucky-label">幸运颜色</div>
+                    <div class="lucky-value">${lucky.color.recommended[0]}</div>
+                </div>
+                <div class="lucky-item">
+                    <div class="lucky-icon">🔢</div>
+                    <div class="lucky-label">幸运数字</div>
+                    <div class="lucky-value">${lucky.number.lucky_numbers.join('、')}</div>
+                </div>
+                <div class="lucky-item">
+                    <div class="lucky-icon">🧭</div>
+                    <div class="lucky-label">幸运方位</div>
+                    <div class="lucky-value">${lucky.direction.main_direction}</div>
+                </div>
+            `;
+
+            // Analysis section
+            const categories = [
+                {key: 'career', icon: '💼', title: '事业', data: analysis.career},
+                {key: 'wealth', icon: '💰', title: '财运', data: analysis.wealth},
+                {key: 'love', icon: '💕', title: '感情', data: analysis.love},
+                {key: 'health', icon: '💪', title: '健康', data: analysis.health},
+                {key: 'personality', icon: '🎭', title: '性格', data: analysis.personality}
+            ];
+
+            document.getElementById('analysis-section').innerHTML = categories.map(cat => `
+                <div class="analysis-card">
+                    <div class="analysis-header">
+                        <span class="analysis-icon">${cat.icon}</span>
+                        <span class="analysis-title">${cat.title}</span>
+                        <span class="analysis-score">${cat.data.score}分</span>
+                    </div>
+                    <div class="analysis-text">${cat.data.analysis}</div>
+                    <div class="suggestions">
+                        <div class="suggestions-title">建议：</div>
+                        ${cat.data.suggestions.slice(0, 3).map(s => `<div class="suggestion-item">• ${s}</div>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showMarriage() {
+            showPage('marriage-page');
+        }
+
+        function showLuckyElements() {
+            if (!currentBaziData) {
+                alert('请先完成八字排盘');
+                showPage('input-page');
+                return;
+            }
+            const { lucky } = currentBaziData;
+            alert(`幸运颜色: ${lucky.color.recommended.join(', ')}\n幸运数字: ${lucky.number.lucky_numbers.join(', ')}\n幸运方位: ${lucky.direction.main_direction}`);
+        }
+
+        async function calculateMarriage() {
+            const person1 = {
+                year: parseInt(document.getElementById('m1-year').value),
+                month: parseInt(document.getElementById('m1-month').value),
+                day: parseInt(document.getElementById('m1-day').value),
+                hour: parseInt(document.getElementById('m1-hour').value),
+                minute: parseInt(document.getElementById('m1-minute').value),
+                birthplace: ''
+            };
+            const person2 = {
+                year: parseInt(document.getElementById('m2-year').value),
+                month: parseInt(document.getElementById('m2-month').value),
+                day: parseInt(document.getElementById('m2-day').value),
+                hour: parseInt(document.getElementById('m2-hour').value),
+                minute: parseInt(document.getElementById('m2-minute').value),
+                birthplace: ''
+            };
+
+            if (!person1.year || !person2.year) {
+                alert('请输入完整的出生信息');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8000/marriage', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ person1, person2 })
+                });
+                const data = await response.json();
+                alert(`合婚结果: ${data.score}分\n${data.description}`);
+                showPage('home-page');
+            } catch (e) {
+                alert('合婚分析失败，请确保后端服务已启动');
+            }
+        }
+
+        async function showDailyLuck() {
+            const today = new Date();
+            document.getElementById('daily-date').textContent = today.toLocaleDateString('zh-CN');
+
+            const luckItems = ['大吉', '吉', '平', '凶', '大凶'];
+            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+            const overall = luckItems[dayOfYear % 5];
+
+            const emojis = {'大吉': '🌟', '吉': '😊', '平': '😐', '凶': '😟', '大凶': '💀'};
+            const colors = {'大吉': '#D4AF37', '吉': '#4CAF50', '平': '#2196F3', '凶': '#FF9800', '大凶': '#F44336'};
+
+            document.getElementById('daily-emoji').textContent = emojis[overall];
+            document.getElementById('daily-luck').textContent = overall;
+            document.getElementById('daily-luck').style.color = colors[overall];
+
+            const cats = [
+                {name: '整体运势', luck: overall},
+                {name: '事业运势', luck: luckItems[(dayOfYear + 1) % 5]},
+                {name: '感情运势', luck: luckItems[(dayOfYear + 2) % 5]},
+                {name: '财运运势', luck: luckItems[(dayOfYear + 3) % 5]},
+                {name: '健康运势', luck: luckItems[(dayOfYear + 4) % 5]}
+            ];
+
+            document.getElementById('daily-categories').innerHTML = cats.map(c => `
+                <div class="daily-category">
+                    <span class="daily-cat-name">${c.name}</span>
+                    <span class="daily-cat-luck" style="color: ${colors[c.luck]}">${c.luck}</span>
+                </div>
+            `).join('');
+
+            showPage('daily-page');
+        }
+    </script>
+</body>
+</html>
