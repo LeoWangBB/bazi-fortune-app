@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八字算命 - 磊磊出品</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+            min-height: 100vh; color: #fff;
+        }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 30px 0; }
+        .header h1 { font-size: 28px; color: #D4AF37; margin-bottom: 10px; }
+        .header p { color: #aaa; font-size: 14px; }
+        .card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .card-title { font-size: 18px; color: #D4AF37; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #aaa; font-size: 14px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #222; color: #fff; font-size: 16px;
+        }
+        .row { display: flex; gap: 10px; }
+        .row .form-group { flex: 1; }
+        .btn {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #D4AF37, #B8962E); color: #1A1A2E;
+            border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+        .btn:hover { opacity: 0.9; }
+        .result { display: none; }
+        .bazi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
+        .bazi-pillar { text-align: center; padding: 15px 10px; background: rgba(212,175,55,0.1); border-radius: 12px; border: 1px solid #D4AF37; }
+        .bazi-pillar .label { font-size: 12px; color: #aaa; margin-bottom: 5px; }
+        .bazi-pillar .ganzhi { font-size: 18px; color: #D4AF37; font-weight: bold; }
+        .score-badge { text-align: center; padding: 20px; background: rgba(212,175,55,0.1); border-radius: 12px; margin: 20px 0; }
+        .score-badge .score { font-size: 48px; color: #D4AF37; font-weight: bold; }
+        .score-badge .label { color: #aaa; font-size: 14px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; }
+        .tab { padding: 10px 20px; background: rgba(255,255,255,0.05); border-radius: 20px; white-space: nowrap; cursor: pointer; }
+        .tab.active { background: #D4AF37; color: #1A1A2E; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .analysis-item { margin-bottom: 20px; }
+        .analysis-item h3 { color: #D4AF37; font-size: 16px; margin-bottom: 10px; }
+        .analysis-item p { color: #ccc; line-height: 1.6; }
+        .lucky-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .lucky-item { text-align: center; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; }
+        .lucky-item .icon { font-size: 24px; margin-bottom: 8px; }
+        .lucky-item .label { color: #aaa; font-size: 12px; }
+        .lucky-item .value { color: #D4AF37; font-size: 18px; font-weight: bold; margin-top: 5px; }
+        .menu { position: fixed; bottom: 0; left: 0; right: 0; background: #1A1A2E; border-top: 1px solid #333; display: flex; padding: 10px 0; }
+        .menu-item { flex: 1; text-align: center; color: #aaa; font-size: 12px; cursor: pointer; }
+        .menu-item.active { color: #D4AF37; }
+        .menu-item span { display: block; font-size: 20px; margin-bottom: 4px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <!-- Home Page -->
+        <div id="home-page">
+            <div class="header">
+                <h1>八字算命</h1>
+                <p>磊磊出品 · 精批一生运势</p>
+            </div>
+            <div class="card">
+                <div class="card-title">出生信息</div>
+                <div class="form-group">
+                    <label>公历生日</label>
+                    <div class="row">
+                        <div class="form-group"><input type="number" id="year" placeholder="年" min="1900" max="2100"></div>
+                        <div class="form-group"><input type="number" id="month" placeholder="月" min="1" max="12"></div>
+                        <div class="form-group"><input type="number" id="day" placeholder="日" min="1" max="31"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>出生时辰</label>
+                    <div class="row">
+                        <div class="form-group"><input type="number" id="hour" placeholder="时" min="0" max="23"></div>
+                        <div class="form-group"><input type="number" id="minute" placeholder="分" min="0" max="59"></div>
+                    </div>
+                </div>
+                <div class="form-group"><input type="text" id="birthplace" placeholder="出生地（可选）"></div>
+                <button class="btn" onclick="calculateBazi()">开始算命</button>
+            </div>
+        </div>
+
+        <!-- Result Page -->
+        <div id="result-page" class="result">
+            <div class="header">
+                <h1>八字排盘</h1>
+            </div>
+            <div class="bazi-grid">
+                <div class="bazi-pillar"><div class="label">年柱</div><div class="ganzhi" id="year-pillar">-</div></div>
+                <div class="bazi-pillar"><div class="label">月柱</div><div class="ganzhi" id="month-pillar">-</div></div>
+                <div class="bazi-pillar"><div class="label">日柱</div><div class="ganzhi" id="day-pillar">-</div></div>
+                <div class="bazi-pillar"><div class="label">时柱</div><div class="ganzhi" id="hour-pillar">-</div></div>
+            </div>
+            <div class="score-badge">
+                <div class="score" id="overall-score">-</div>
+                <div class="label">综合评分</div>
+            </div>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('career')">事业</div>
+                <div class="tab" onclick="switchTab('wealth')">财运</div>
+                <div class="tab" onclick="switchTab('love')">感情</div>
+                <div class="tab" onclick="switchTab('health')">健康</div>
+                <div class="tab" onclick="switchTab('personality')">性格</div>
+                <div class="tab" onclick="switchTab('lucky')">幸运</div>
+            </div>
+            <div id="tab-content"></div>
+        </div>
+
+        <!-- Marriage Page -->
+        <div id="marriage-page" class="result">
+            <div class="header"><h1>合婚配对</h1></div>
+            <div class="card">
+                <div class="card-title">男方信息</div>
+                <div class="row">
+                    <div class="form-group"><input type="number" id="m1-year" placeholder="年"></div>
+                    <div class="form-group"><input type="number" id="m1-month" placeholder="月"></div>
+                    <div class="form-group"><input type="number" id="m1-day" placeholder="日"></div>
+                </div>
+                <div class="row">
+                    <div class="form-group"><input type="number" id="m1-hour" placeholder="时"></div>
+                    <div class="form-group"><input type="number" id="m1-minute" placeholder="分"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">女方信息</div>
+                <div class="row">
+                    <div class="form-group"><input type="number" id="m2-year" placeholder="年"></div>
+                    <div class="form-group"><input type="number" id="m2-month" placeholder="月"></div>
+                    <div class="form-group"><input type="number" id="m2-day" placeholder="日"></div>
+                </div>
+                <div class="row">
+                    <div class="form-group"><input type="number" id="m2-hour" placeholder="时"></div>
+                    <div class="form-group"><input type="number" id="m2-minute" placeholder="分"></div>
+                </div>
+            </div>
+            <button class="btn" onclick="calculateMarriage()">开始合婚</button>
+            <div id="marriage-result" style="margin-top:20px"></div>
+        </div>
+
+        <!-- Daily Fortune Page -->
+        <div id="daily-page" class="result">
+            <div class="header"><h1>今日运势</h1></div>
+            <div id="daily-content"></div>
+        </div>
+    </div>
+
+    <div class="menu">
+        <div class="menu-item" onclick="showPage('home-page')"><span>🏠</span>首页</div>
+        <div class="menu-item" onclick="showPage('marriage-page')"><span>💑</span>合婚</div>
+        <div class="menu-item" onclick="showDaily()"><span>📅</span>今日</div>
+    </div>
+
+    <script>
+        // API配置 - 部署时修改这里
+        const API_BASE = 'https://bazi-api-xxxxx.render.com'; // TODO: 替换为实际API地址
+
+        let currentData = null;
+
+        function showPage(pageId) {
+            document.querySelectorAll('#app > div').forEach(div => div.classList.add('result'));
+            document.getElementById(pageId).classList.remove('result');
+        }
+
+        async function calculateBazi() {
+            const year = parseInt(document.getElementById('year').value);
+            const month = parseInt(document.getElementById('month').value);
+            const day = parseInt(document.getElementById('day').value);
+            const hour = parseInt(document.getElementById('hour').value) || 0;
+            const minute = parseInt(document.getElementById('minute').value) || 0;
+            const birthplace = document.getElementById('birthplace').value || '';
+
+            if (!year || !month || !day) { alert('请输入完整生日'); return; }
+
+            try {
+                const response = await fetch(API_BASE + '/bazi', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({year, month, day, hour, minute, birthplace})
+                });
+                if (!response.ok) throw new Error('API error');
+                currentData = await response.json();
+                displayResult(currentData);
+                showPage('result-page');
+            } catch (e) {
+                alert('计算失败，请稍后重试');
+                console.error(e);
+            }
+        }
+
+        function displayResult(data) {
+            const {bazi, analysis, lucky} = data;
+            document.getElementById('year-pillar').textContent = bazi.year.ganzhi;
+            document.getElementById('month-pillar').textContent = bazi.month.ganzhi;
+            document.getElementById('day-pillar').textContent = bazi.day.ganzhi;
+            document.getElementById('hour-pillar').textContent = bazi.hour.ganzhi;
+            document.getElementById('overall-score').textContent = analysis.overall_score;
+
+            window.baziData = data;
+            switchTab('career');
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const data = window.baziData;
+            const content = document.getElementById('tab-content');
+
+            if (tab === 'lucky') {
+                content.innerHTML = `
+                    <div class="lucky-grid">
+                        <div class="lucky-item"><div class="icon">🎨</div><div class="label">幸运颜色</div><div class="value">${lucky.color.recommended.join('、')}</div></div>
+                        <div class="lucky-item"><div class="icon">🔢</div><div class="label">幸运数字</div><div class="value">${lucky.number.lucky_numbers.join('、')}</div></div>
+                        <div class="lucky-item"><div class="icon">🧭</div><div class="label">幸运方位</div><div class="value">${lucky.direction.direction}</div></div>
+                    </div>
+                `;
+            } else {
+                const item = analysis[tab];
+                content.innerHTML = `
+                    <div class="card">
+                        <div class="score-badge" style="padding:10px">
+                            <div class="score" style="font-size:32px">${item.score}</div>
+                            <div class="label">评分</div>
+                        </div>
+                        <p>${item.analysis}</p>
+                        <h3 style="color:#D4AF37;margin:15px 0 10px">建议</h3>
+                        <ul style="color:#ccc;line-height:2">
+                            ${item.suggestions.map(s => `<li>${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        async function calculateMarriage() {
+            const p1 = {
+                year: parseInt(document.getElementById('m1-year').value),
+                month: parseInt(document.getElementById('m1-month').value),
+                day: parseInt(document.getElementById('m1-day').value),
+                hour: parseInt(document.getElementById('m1-hour').value) || 0,
+                minute: parseInt(document.getElementById('m1-minute').value) || 0
+            };
+            const p2 = {
+                year: parseInt(document.getElementById('m2-year').value),
+                month: parseInt(document.getElementById('m2-month').value),
+                day: parseInt(document.getElementById('m2-day').value),
+                hour: parseInt(document.getElementById('m2-hour').value) || 0,
+                minute: parseInt(document.getElementById('m2-minute').value) || 0
+            };
+            if (!p1.year || !p2.year) { alert('请输入完整生日'); return; }
+
+            try {
+                const response = await fetch(API_BASE + '/marriage', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({person1: p1, person2: p2})
+                });
+                const data = await response.json();
+                document.getElementById('marriage-result').innerHTML = `
+                    <div class="score-badge">
+                        <div class="score">${data.score}</div>
+                        <div class="label">${data.level}</div>
+                        <p style="margin-top:10px;color:#ccc">${data.description}</p>
+                    </div>
+                `;
+            } catch (e) { alert('计算失败'); }
+        }
+
+        async function showDaily() {
+            if (!currentData) { alert('请先算命'); return; }
+            showPage('daily-page');
+            try {
+                const response = await fetch(API_BASE + '/daily/' + encodeURIComponent(currentData.bazi.day.stem));
+                const data = await response.json();
+                document.getElementById('daily-content').innerHTML = `
+                    <div class="card">
+                        <div class="score-badge">
+                            <div class="score">${data.score}</div>
+                            <div class="label">今日运势</div>
+                        </div>
+                        <p>${data.analysis}</p>
+                    </div>
+                `;
+            } catch (e) { document.getElementById('daily-content').innerHTML = '<p style="text-align:center">请先算命</p>'; }
+        }
+    </script>
+</body>
+</html>
